@@ -5,6 +5,7 @@ const { default: axios } = require("axios");
 
 const handleDownloadImageRandomAnime = require("./handler/handleDownloadImageRandomAnime");
 
+// Hapus folder data jika terjadi error EBUSY: resource busy or locked
 const client = new Client({
     authStrategy: new LocalAuth({
         dataPath: "./data",
@@ -124,39 +125,29 @@ _Harap gunakan teknologi ini dengan bijak._
                         msg.from,
                         "Replay chat ini dan berikan link nya"
                     );
-                    break;
-                default:
-                    msg.reply(
-                        "Perintah tidak tersedia.\nKetik *.menu/!menu* untuk membuka list perintah"
-                    );
-            }
-        }
-    }
-});
 
-client.on("message", async (msg) => {
-    if (msg.hasQuotedMsg) {
-        const quatedMsg = await msg.getQuotedMessage();
+                    client.on("message", async (msg) => {
+                        if (msg.hasQuotedMsg) {
+                            const quatedMsg = await msg.getQuotedMessage();
 
-        if (quatedMsg.body === "Replay chat ini dan berikan link nya") {
-            console.log(msg)
-            const userLink = msg.body;
-            const tiktokRegex = /https:\/\/(www\.tiktok\.com|vt\.tiktok\.com)\/[\S]+/gi;
+                            if (quatedMsg.body === "Replay chat ini dan berikan link nya") {
+                                const userLink = msg.body;
+                                const tiktokRegex = /https:\/\/(www\.tiktok\.com|vt\.tiktok\.com)\/[\S]+/gi;
 
-            if (tiktokRegex.test(userLink)) {
-                const tt = require("@tobyg74/tiktok-api-dl");
+                                if (tiktokRegex.test(userLink)) {
+                                    const tt = require("@tobyg74/tiktok-api-dl");
 
-                await msg.reply("Proccess...");
-                tt.Downloader(userLink, { version: "v2" })
-                    .then(
-                        async (result) => {
-                            try {
-                                const { type } = result.result;
-                                const { nickname } = result.result.author
-                                const { likeCount, commentCount, shareCount } = result.result.statistics;
-                                const { video, music } = result.result;
+                                    await msg.reply("Proccess...");
+                                    tt.Downloader(userLink, { version: "v2" })
+                                        .then(
+                                            async (result) => {
+                                                try {
+                                                    const { type } = result.result;
+                                                    const { nickname } = result.result.author
+                                                    const { likeCount, commentCount, shareCount } = result.result.statistics;
+                                                    const { video, music } = result.result;
 
-                                await msg.reply(`Powered by Gaboot 🎭
+                                                    await msg.reply(`Powered by Gaboot 🎭
 _Harap gunakan data ini dengan bijak. Segala kerugian yang ditimbulkan bukan tanggung jawab kami._
 
 *Status*: ${result.status ?? 'Tidak tersedia'}
@@ -177,11 +168,20 @@ _Download_: ${video ?? 'Tidak tersedia'}
 _Download_: ${music ?? 'Tidak tersedia'}
 
 Link vt: ${userLink}`);
-                            } catch (e) {
-                                msg.reply("Proses gagal. Coba lagi");
-                                console.error(e.message)
+                                                } catch (e) {
+                                                    msg.reply("Proses gagal. Coba lagi");
+                                                    console.error(e.message)
+                                                }
+                                            }
+                                        );
+                                }
                             }
                         }
+                    });
+                    break;
+                default:
+                    msg.reply(
+                        "Perintah tidak tersedia.\nKetik *.menu/!menu* untuk membuka list perintah"
                     );
             }
         }
