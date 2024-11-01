@@ -5,7 +5,7 @@ const { default: axios } = require("axios");
 
 const handleDownloadImageRandomAnime = require("./handler/handleDownloadImageRandomAnime");
 
-// Hapus folder data jika terjadi error EBUSY: resource busy or locked
+// Hapus folder data jika terjadi error: EBUSY: resource busy or locked
 const client = new Client({
     authStrategy: new LocalAuth({
         dataPath: "./data",
