@@ -1,8 +1,8 @@
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
-const tt = require("@tobyg74/tiktok-api-dl");
 const { default: axios } = require("axios");
+
 const handleDownloadImageRandomAnime = require("./handler/handleDownloadImageRandomAnime");
 
 const client = new Client({
@@ -144,6 +144,8 @@ client.on("message", async (msg) => {
             const tiktokRegex = /https:\/\/(www\.tiktok\.com|vt\.tiktok\.com)\/[\S]+/gi;
 
             if (tiktokRegex.test(userLink)) {
+                const tt = require("@tobyg74/tiktok-api-dl");
+
                 await msg.reply("Proccess...");
                 tt.Downloader(userLink, { version: "v2" })
                     .then(
